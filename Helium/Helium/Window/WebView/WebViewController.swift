@@ -119,20 +119,26 @@ class WebViewController: NSViewController, WKNavigationDelegate {
     
     func loadURL(_ url: URL) {
 //        webView.load(URLRequest(url: url))
-        let textView = NSTextView(frame: CGRect(x: 100.0, y: 90.0, width: 250.0, height: 100.0))
-        textView.shadow = nil
-        textView.backgroundColor = NSColor(red: 1, green: 0, blue: 0, alpha: 0.1)
+        let y = Double.random(in: 10.0 ... 600.0)
+        let textView = NSText(frame: CGRect(x: 1300.0, y: y, width: 2500.0, height: 50.0))
+        let shadow: NSShadow = NSShadow()
+        shadow.shadowBlurRadius = 2  // Amount of blur (in pixels) applied to the shadow.
+        shadow.shadowOffset = NSMakeSize(4, 4) // the distance from the text the shadow is dropped (positive X = to the right; positive Y = below the text)
+        shadow.shadowColor = NSColor.black
+        textView.shadow = shadow
+        textView.drawsBackground = false
+        textView.font = NSFont(name: "Menlo", size: 50)
         textView.string = url.absoluteString
         view.addSubview(textView)
         
         DispatchQueue.main.asyncAfter(deadline: .now()+1.0) {
             NSAnimationContext.beginGrouping()
-            NSAnimationContext.current.duration = 30
-            textView.animator().setFrameOrigin(NSPoint(x: -600, y: 90))
+            NSAnimationContext.current.duration = 10
+            textView.animator().setFrameOrigin(NSPoint(x: -100, y: y))
             NSAnimationContext.endGrouping()
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now()+30.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now()+13.0) {
             textView.removeFromSuperview()
         }
     }

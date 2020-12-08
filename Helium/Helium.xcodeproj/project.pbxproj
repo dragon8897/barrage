@@ -11,6 +11,7 @@
 		27199AB71BE422AC00E02297 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27199AB61BE422AC00E02297 /* ShareViewController.swift */; };
 		27199ABA1BE422AC00E02297 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27199AB81BE422AC00E02297 /* ShareViewController.xib */; };
 		27199ABE1BE422AC00E02297 /* HeliumShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 27199AB01BE422AC00E02297 /* HeliumShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2A1E753F257FF2EA0023921F /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2A1E753E257FF2EA0023921F /* Starscream */; };
 		4D867CB71AD6781200681331 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D867CB61AD6781200681331 /* AppDelegate.swift */; };
 		4D867CB91AD6781200681331 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D867CB81AD6781200681331 /* WebViewController.swift */; };
 		4D867CBB1AD6781200681331 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D867CBA1AD6781200681331 /* Images.xcassets */; };
@@ -157,6 +158,7 @@
 				D769ABE1244FE33700215C76 /* OpenCombineDispatch in Frameworks */,
 				D769ABE5244FE33700215C76 /* OpenCombine in Frameworks */,
 				D769ABE3244FE33700215C76 /* OpenCombineFoundation in Frameworks */,
+				2A1E753F257FF2EA0023921F /* Starscream in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,6 +393,7 @@
 				D769ABE0244FE33700215C76 /* OpenCombineDispatch */,
 				D769ABE2244FE33700215C76 /* OpenCombineFoundation */,
 				D769ABE4244FE33700215C76 /* OpenCombine */,
+				2A1E753E257FF2EA0023921F /* Starscream */,
 			);
 			productName = Helium;
 			productReference = 4D867CB11AD6781200681331 /* Helium.app */;
@@ -460,6 +463,7 @@
 			mainGroup = 4D867CA81AD6781200681331;
 			packageReferences = (
 				D769ABDF244FE33700215C76 /* XCRemoteSwiftPackageReference "OpenCombine" */,
+				2A1E753D257FF2EA0023921F /* XCRemoteSwiftPackageReference "Starscream" */,
 			);
 			productRefGroup = 4D867CB21AD6781200681331 /* Products */;
 			projectDirPath = "";
@@ -896,6 +900,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2A1E753D257FF2EA0023921F /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daltoniam/Starscream.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.4;
+			};
+		};
 		D769ABDF244FE33700215C76 /* XCRemoteSwiftPackageReference "OpenCombine" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/broadwaylamb/OpenCombine";
@@ -907,6 +919,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2A1E753E257FF2EA0023921F /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A1E753D257FF2EA0023921F /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
+		};
 		D769ABE0244FE33700215C76 /* OpenCombineDispatch */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D769ABDF244FE33700215C76 /* XCRemoteSwiftPackageReference "OpenCombine" */;

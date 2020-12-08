@@ -21,7 +21,7 @@ class HeliumWindowController: NSWindowController, NSWindowDelegate {
     private override init(window: NSWindow?) {
         precondition(window == nil, "call init() with no window")
         let webController = WebViewController()
-        webController.view.frame.size = .init(width: 600, height: 600)
+        webController.view.frame.size = .init(width: 1600, height: 600)
         let window = HeliumWindow(contentViewController: webController)
         window.bind(.title, to: webController, withKeyPath: "title", options: nil)
                 
@@ -139,8 +139,8 @@ class HeliumWindowController: NSWindowController, NSWindowDelegate {
             window!.isOpaque = false
             window!.ignoresMouseEvents = true
 //            window!.animator().alphaValue = 0.3
-            window!.backgroundColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0)
-//            window!.animator().alphaValue = 0.1
+            window!.animator().backgroundColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0.01)
+//            window!.animator().alphaValue = 0.0
         }
     }
     
