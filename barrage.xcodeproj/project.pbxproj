@@ -13,7 +13,6 @@
 		2A3467C02583D58600DF094B /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3467BF2583D58600DF094B /* WindowController.swift */; };
 		2A3467C22583DCC900DF094B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3467C12583DCC900DF094B /* main.swift */; };
 		2A91AC3725853CB60088228D /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2A91AC3625853CB60088228D /* Starscream */; };
-		D75A0519258719DE00654AC3 /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A0518258719DE00654AC3 /* PopupViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +24,6 @@
 		2A3467B92583D12800DF094B /* barrage.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = barrage.entitlements; sourceTree = "<group>"; };
 		2A3467BF2583D58600DF094B /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		2A3467C12583DCC900DF094B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		D75A0518258719DE00654AC3 /* PopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +61,6 @@
 				2A3467AF2583D12800DF094B /* AppDelegate.swift */,
 				2A3467BF2583D58600DF094B /* WindowController.swift */,
 				2A1524E825853FA500CE1C0C /* Nano.swift */,
-				D75A0518258719DE00654AC3 /* PopupViewController.swift */,
 				2A3467B32583D12800DF094B /* Assets.xcassets */,
 				2A3467B82583D12800DF094B /* Info.plist */,
 				2A3467B92583D12800DF094B /* barrage.entitlements */,
@@ -146,7 +143,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D75A0519258719DE00654AC3 /* PopupViewController.swift in Sources */,
 				2A3467C02583D58600DF094B /* WindowController.swift in Sources */,
 				2A1524E925853FA500CE1C0C /* Nano.swift in Sources */,
 				2A3467B02583D12800DF094B /* AppDelegate.swift in Sources */,
@@ -282,7 +278,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mht.barrage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -301,7 +297,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mht.barrage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

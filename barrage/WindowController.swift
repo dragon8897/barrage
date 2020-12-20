@@ -65,6 +65,8 @@ class BarrageViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onNotificationLoadBarrage(_:)), name: NSNotification.Name(rawValue: "loadBarrage"), object: nil)
     }
     
     var trackingTag: NSView.TrackingRectTag?
@@ -77,6 +79,12 @@ class BarrageViewController: NSViewController {
         }
         
         trackingTag = view.addTrackingRect(view.bounds, owner: self, userData: nil, assumeInside: false)
+    }
+    
+    @objc func onNotificationLoadBarrage(_ nf: Notification) {
+        if let txt = nf.object as? String {
+            loadBarrage(txt)
+        }
     }
     
     func loadBarrage(_ txt: String) {
@@ -131,7 +139,7 @@ class WindowController: NSWindowController, NSWindowDelegate {
         window.delegate = self
         
         DispatchQueue.main.asyncAfter(deadline: .now()+1.0) {
-            viewController.loadBarrage("GOGOGO sdfkjksdjkf 你好 😆")
+            viewController.loadBarrage("你好, 欢迎使用弹幕 PPT 😆")
             self.nano?.connect()
         }
         

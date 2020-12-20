@@ -19,34 +19,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         controller.showWindow(self)
         
-        // Create the popover
-        let popover = NSPopover()
-        popover.contentSize = NSSize(width: 200, height: 300)
-        popover.behavior = .transient
-        popover.contentViewController = PopupViewController()
-        self.popover = popover
-        
         // Create the status item
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
         
         if let button = self.statusBarItem.button {
             button.image = NSImage(named: "Icon")
-            button.action = #selector(togglePopover(_:))
         }
+        
+        let menu = NSMenu()
+
+        menu.addItem(NSMenuItem(title: "test barrage", action: #selector(self.testBarrage(_:)), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
+        
+        self.statusBarItem.menu = menu
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
     
-    @objc func togglePopover(_ sender: AnyObject?) {
-        if let button = self.statusBarItem.button {
-            if self.popover.isShown {
-                self.popover.performClose(sender)
-            } else {
-                self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
-            }
-        }
+    @objc func testBarrage(_ sender: Any?) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loadBarrage"), object: "Never put off until tomorrow what you can do the day after tomorrow.")
     }
 }
 
