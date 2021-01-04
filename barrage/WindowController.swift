@@ -126,8 +126,7 @@ class WindowController: NSWindowController, NSWindowDelegate {
         self.init(window: nil)
     }
     
-    var nano: Nano?
-    
+
     private override init(window: NSWindow?) {
         precondition(window == nil, "call init() with no window")
         let viewController = BarrageViewController()
@@ -140,10 +139,7 @@ class WindowController: NSWindowController, NSWindowDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now()+1.0) {
             viewController.loadBarrage("你好, 欢迎使用弹幕 PPT 😆")
-            self.nano?.connect()
         }
-        
-        nano = Nano()
     }
     
     required init?(coder: NSCoder) {
