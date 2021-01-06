@@ -81,7 +81,7 @@ func encodeMsgId(_ id: Int,_ buffer: inout Data,_ offset: Int) -> Int {
     return offset
 }
 
-func encodeMsgRoute(_ compressRoute: Bool,_ route: String,_ buffer: inout Data, offset: Int) -> Int {
+func encodeMsgRoute(_ compressRoute: Bool,_ route: String,_ buffer: inout Data,_ offset: Int) -> Int {
     var offset = offset
 //    if (compressRoute) {
 //        if (route > MSG_ROUTE_CODE_MAX) {
@@ -115,6 +115,8 @@ class Nano {
     var status: Status = Status.disconnected
     
     var socket: WebSocket?
+    
+    private var _reqId: Int = 0
 
     public init() {
         var request = URLRequest(url: URL(string: "ws://localhost:3250/nano")!)
@@ -141,7 +143,6 @@ class Nano {
                 case .HEARTBEAT:
                     break
                 case .HANDSHAKE:
-                    print("handshake", pkg.msg)
                     self._send(data: self._encodePkg(pt: .HANDSHAKE_ACK))
                     break
                 case .HANDSHAKE_ACK:
@@ -184,6 +185,14 @@ class Nano {
         return d
     }
     
+    private func _encodePkg(pt: PackageType, msg: Data) -> Data {
+        let len = msg.count
+        let pkg: [UInt8] = [pt.rawValue & 0xff, UInt8((len >> 16) & 0xff), UInt8((len >> 8) & 0xff), UInt8(len & 0xff)]
+        var d = Data(pkg)
+        d.append(msg)
+        return d
+    }
+    
     private func _decodePkg(d: Data) -> (t: PackageType, msg: String) {
         let t = d[0]
         if d.count > 4 {
@@ -204,58 +213,97 @@ class Nano {
         self.socket?.write(data: data)
     }
     
-    private func _encodeMsg(id: Int, type: MessageType, compressRoute: Bool, route: String, msg: String) {
-        let idBytes = msgHasId(type: type) ? caculateMsgIdBytes(id: id) : 0
-        var msgLen = MSG_FLAG_BYTES + idBytes
-        var routeByte = Data()
-//
-        if (msgHasRoute(type: type)) {
-//          if (compressRoute) {
-//            if (typeof route !== "number") {
-//              throw new Error("error flag for number route!")
-//            }
-//            msgLen += MSG_ROUTE_CODE_BYTES
-//          } else {
-            msgLen += MSG_ROUTE_LEN_BYTES
-            if (route.count > 0) {
-                routeByte = strencode(str: route)
-              if (routeByte.count > 255) {
-//                throw new Error("route maxlength is overflow")
-              }
-              msgLen += routeByte.count
-            }
-//          }
-        }
-
-        if (msg.count > 0) {
-          msgLen += msg.count
-        }
-
-        var buffer = Data(count: msgLen)
-        var offset = 0
-
-        // add flag
-        offset = encodeMsgFlag(type, compressRoute, &buffer, offset)
-
-        // add message id
+    private func _encodeMsg(_ id: Int,_ type: MessageType,_ route: String,_ msg: String) -> Data {
+        var buff = Data()
+        let flag = type.rawValue << 1
+        buff.append(contentsOf: [flag])
+        
         if (msgHasId(type: type)) {
-          offset = encodeMsgId(id, &buffer, offset)
+            var n = id
+            while true {
+                let b: UInt8 = UInt8(n % 0xff)
+                n = n >> 7
+                if (n > 0) {
+                    buff.append(contentsOf: [b + 128])
+                } else {
+                    buff.append(contentsOf: [b])
+                    break
+                }
+            }
         }
-
-        // add route
-//        if (msgHasRoute(type: type)) {
-//          if (compressRoute) {
-//            offset = encodeMsgRoute(compressRoute, route, buffer, offset)
-//          } else {
-//            offset = encodeMsgRoute(compressRoute, routeByte, buffer, offset)
-//          }
-//        }
-//
-//        // add body
-//        if (msg) {
-//          offset = encodeMsgBody(msg, buffer, offset)
-//        }
-//        return buffer
+        
+        if (msgHasRoute(type: type)) {
+            let rf = Data(route.utf8)
+            buff.append(contentsOf: [UInt8(rf.count)])
+            buff.append(rf)
+        }
+        
+        buff.append(contentsOf: msg.utf8)
+        return buff
+    }
+    
+    private func _encodeMsg(_ id: Int,_ type: MessageType,_ route: Int,_ msg: String) -> Data {
+        var buff = Data()
+        let flag = type.rawValue << 1 | 0x01
+        buff.append(contentsOf: [flag])
+        
+        if (msgHasId(type: type)) {
+            var n = id
+            while true {
+                let b: UInt8 = UInt8(n % 0xff)
+                n = n >> 7
+                if (n > 0) {
+                    buff.append(contentsOf: [b + 128])
+                } else {
+                    buff.append(contentsOf: [b])
+                }
+            }
+        }
+        
+        if (msgHasRoute(type: type)) {
+            buff.append(contentsOf: [UInt8(route << 8 & 0xff)])
+            buff.append(contentsOf: [UInt8(route & 0xff)])
+        }
+        
+        buff.append(contentsOf: msg.utf8)
+        return buff
+    }
+    
+    public func _decodeMsg(data: Data) {
+        if (data.count < 0x02) {
+            return
+        }
+        
+        let flag = data[0]
+        var offset = 1
+        let type = MessageType(rawValue: flag >> 1 & 0x07)!
+        
+        var id = 0
+        if (msgHasId(type: type)) {
+            for i in offset..<data.count {
+                let b = data[i]
+                id += Int(b & 0x7f) << (7 * (i - offset))
+                if (b < 0xff) {
+                    offset = i + 1
+                    break
+                }
+            }
+        }
+        
+        if (msgHasRoute(type: type)) {
+            if (flag & 0x01 == 1) {
+                
+            } else {
+                let rl = Int(data[offset])
+                offset += 1
+                let route: String = String(decoding: data[offset...(offset + rl)], as: UTF8.self)
+                offset += rl
+                print("route", route)
+            }
+        }
+        
+        let msgData = Data(data[offset...data.count])
+        print("kkk", msgData.count)
     }
     
     public func connect() {
@@ -266,9 +314,9 @@ class Nano {
         socket?.disconnect()
     }
     
-    public func request(route: String, data: Data) {
+    public func request(route: String, data: String) {
 //        data = data || {}
-//        this._reqId++
+        _reqId += 1
 //        let msg = strencode(JSON.stringify(data))
 //        let compressRoute = false
 //        let routeId = 0
@@ -276,8 +324,8 @@ class Nano {
 //            routeId = this._route2code[route]
 //            compressRoute = true
 //        }
-//        msg = encodeMsg(this._reqId, MessageType.REQUEST, compressRoute, compressRoute ? routeId : route, msg)
-//        const success = this._send(encodePkg(PackageType.DATA, msg))
+        let msg = self._encodeMsg(_reqId, MessageType.REQUEST, route, data)
+        self._send(data: self._encodePkg(pt: PackageType.DATA, msg: msg))
 //        if (success) {
 //            return new Promise<any>(resolve => {
 //                let timeoutId: number = null

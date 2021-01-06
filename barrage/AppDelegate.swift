@@ -35,6 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(miConnect)
         menu.addItem(miDisconnect)
         menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "join room", action: #selector(self.nanoJoin(_:)), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "test barrage", action: #selector(self.testBarrage(_:)), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
@@ -67,6 +68,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func nanoConnect(_ sender: Any?) {
         self.nano?.connect()
+    }
+    
+    @objc func nanoJoin(_ sender: Any?) {
+        self.nano?.request(route: "room.join", data: "{}")
     }
     
     @objc func nanoDisconnect(_ sender: Any?) {
