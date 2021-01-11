@@ -104,6 +104,21 @@ func encodeMsgRoute(_ compressRoute: Bool,_ route: String,_ buffer: inout Data,_
     return offset
 }
 
+struct Msg {
+    var id: Int
+    var route: String
+    var body: Data
+}
+
+struct HandshakeSys: Decodable {
+    var heartbeat: Int
+}
+
+struct HandshakeRst: Decodable {
+    var code: Int
+    var sys: HandshakeSys
+}
+
 class Nano {
     public enum Status {
         case connected
@@ -111,15 +126,21 @@ class Nano {
         case error
     }
     public var onStatus: ((Status) -> Void)?
+    public var onNotify: ((String, Data) -> Void)?
     
     var status: Status = Status.disconnected
     
     var socket: WebSocket?
     
+    private let decoder = JSONDecoder()
+    
+    private var _timer : Timer?
+    private var _hbCount: Int = 0
+    
     private var _reqId: Int = 0
 
     public init() {
-        var request = URLRequest(url: URL(string: "ws://localhost:3250/nano")!)
+        var request = URLRequest(url: URL(string: "ws://localhost:3325/nano")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.onEvent = { event in
@@ -141,13 +162,26 @@ class Nano {
                 let pkg = self._decodePkg(d: data)
                 switch pkg.t {
                 case .HEARTBEAT:
+                    print("heart beat")
+                    self._hbCount = 0
                     break
                 case .HANDSHAKE:
                     self._send(data: self._encodePkg(pt: .HANDSHAKE_ACK))
+                    let rst = try? self.decoder.decode(HandshakeRst.self, from: pkg.body)
+                    print("handshake", rst?.sys.heartbeat ?? 100)
+                    self._startTimer(rst?.sys.heartbeat ?? 30)
                     break
                 case .HANDSHAKE_ACK:
                     break
                 case .DATA:
+                    if pkg.body.count > 0 {
+                        let m = self._decodeMsg(data: pkg.body)
+                        if m.id == 0 {
+                            self.onNotify?(m.route, m.body)
+                        } else {
+                            self.onNotify?(String(m.id), m.body)
+                        }
+                    }
                     break
                 case .KICK:
                     break
@@ -167,6 +201,7 @@ class Nano {
                 break
             case .cancelled:
                 print("websocket cancelled")
+                self._stopTimer()
                 self.status = Status.disconnected
                 self.onStatus?(self.status)
                 break
@@ -174,6 +209,28 @@ class Nano {
                 print("error", error ?? "")
                 break
             }
+        }
+    }
+    
+    private func _startTimer(_ interval: Int) {
+        _timer = Timer.scheduledTimer(timeInterval: TimeInterval(interval), target: self, selector: #selector(self._updataHeartbeat), userInfo: nil, repeats: true)
+        _timer!.fire()
+     }
+
+    @objc func _updataHeartbeat() {
+        print("tick", _hbCount)
+        _hbCount += 1
+        if _hbCount > 3 {
+            self.disconnect()
+        } else {
+            self._send(data: self._encodePkg(pt: .HEARTBEAT))
+        }
+    }
+
+    private func _stopTimer() {
+        if _timer != nil {
+            _timer!.invalidate() //销毁timer
+            _timer = nil
         }
     }
     
@@ -193,12 +250,12 @@ class Nano {
         return d
     }
     
-    private func _decodePkg(d: Data) -> (t: PackageType, msg: String) {
+    private func _decodePkg(d: Data) -> (t: PackageType, body: Data) {
         let t = d[0]
         if d.count > 4 {
-            return (PackageType(rawValue: t)!, String(decoding: d[4...(d.count-1)], as: UTF8.self))
+            return (PackageType(rawValue: t)!, Data(d[4...(d.count-1)]))
         } else {
-            return (PackageType(rawValue: t)!, "")
+            return (PackageType(rawValue: t)!, Data())
         }
     }
     
@@ -269,9 +326,10 @@ class Nano {
         return buff
     }
     
-    public func _decodeMsg(data: Data) {
+    public func _decodeMsg(data: Data) -> Msg {
+        var m = Msg(id: 0, route: "", body: Data())
         if (data.count < 0x02) {
-            return
+            return m
         }
         
         let flag = data[0]
@@ -289,6 +347,7 @@ class Nano {
                 }
             }
         }
+        m.id = id
         
         if (msgHasRoute(type: type)) {
             if (flag & 0x01 == 1) {
@@ -296,14 +355,15 @@ class Nano {
             } else {
                 let rl = Int(data[offset])
                 offset += 1
-                let route: String = String(decoding: data[offset...(offset + rl)], as: UTF8.self)
+                let route: String = String(decoding: data[offset...(offset + rl - 1)], as: UTF8.self)
                 offset += rl
                 print("route", route)
+                m.route = route
             }
         }
         
-        let msgData = Data(data[offset...data.count])
-        print("kkk", msgData.count)
+        m.body = Data(data[offset...(data.count - 1)])
+        return m
     }
     
     public func connect() {

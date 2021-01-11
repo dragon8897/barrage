@@ -88,9 +88,10 @@ class BarrageViewController: NSViewController {
     }
     
     func loadBarrage(_ txt: String) {
+        let fontSize: CGFloat = 50.0
         let screenSize = NSScreen.main!.frame
-        let y = CGFloat.random(in: 10.0 ... screenSize.height)
-        let txtFont = NSFont(name: "Menlo", size: 50)
+        let y = CGFloat.random(in: fontSize / 2 ... (screenSize.height - fontSize))
+        let txtFont = NSFont(name: "Menlo", size: fontSize)
         let txtSize = txt.size(withAttributes:[.font: txtFont!])
         let txtWidth = txtSize.width + 10
         let textView = NSText(frame: CGRect(x: screenSize.width, y: y, width: txtWidth, height: txtSize.height))

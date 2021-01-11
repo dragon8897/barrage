@@ -8,6 +8,13 @@
 
 import Cocoa
 
+struct Message: Decodable {
+    var name: String
+    var content: String
+}
+
+let decoder = JSONDecoder()
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     var popover: NSPopover!
@@ -56,6 +63,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 break
             }
         }
+        
+        nano?.onNotify = { route, body in
+            switch route {
+            case "onMessage":
+                let msg = try? decoder.decode(Message.self, from: body)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loadBarrage"), object: msg?.content)
+                break
+            default:
+                break
+            }
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -71,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func nanoJoin(_ sender: Any?) {
-        self.nano?.request(route: "room.join", data: "{}")
+        self.nano?.request(route: "Room.Join", data: "{}")
     }
     
     @objc func nanoDisconnect(_ sender: Any?) {

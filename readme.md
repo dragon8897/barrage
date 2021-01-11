@@ -4,7 +4,7 @@
 
 ### to-do list
 
-- [ ] websocket 适配
+- [x] websocket 适配
 - [ ] 托盘菜单选项
    - [x] 连接
    - [x] 断开
