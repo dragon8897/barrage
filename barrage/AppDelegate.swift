@@ -43,7 +43,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(miDisconnect)
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "join room", action: #selector(self.nanoJoin(_:)), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "test barrage", action: #selector(self.testBarrage(_:)), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
         
@@ -78,10 +77,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
-    }
-    
-    @objc func testBarrage(_ sender: Any?) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loadBarrage"), object: "Never put off until tomorrow what you can do the day after tomorrow.")
     }
     
     @objc func nanoConnect(_ sender: Any?) {
