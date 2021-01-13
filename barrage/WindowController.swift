@@ -137,10 +137,6 @@ class WindowController: NSWindowController, NSWindowDelegate {
                 
         super.init(window: window)
         window.delegate = self
-        
-        DispatchQueue.main.asyncAfter(deadline: .now()+1.0) {
-            viewController.loadBarrage("你好, 欢迎使用弹幕 PPT 😆")
-        }
     }
     
     required init?(coder: NSCoder) {

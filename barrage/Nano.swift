@@ -140,8 +140,8 @@ class Nano {
     private var _reqId: Int = 0
 
     public init() {
-        var request = URLRequest(url: URL(string: "ws://localhost:13325/nano")!)
-//        var request = URLRequest(url: URL(string: "wss://flybird.ml/nano")!)
+//        var request = URLRequest(url: URL(string: "ws://localhost:13325/nano")!)
+        var request = URLRequest(url: URL(string: "wss://flybird.ml/nano")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.onEvent = { event in
